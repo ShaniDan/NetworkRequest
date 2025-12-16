@@ -5,6 +5,8 @@
 //  Created by Shakhnoza Mirabzalova on 12/10/25.
 //
 
+// Need to use @Observable if I'm using async await concurrency
+
 import Foundation
 import Combine
 
@@ -23,13 +25,26 @@ class CatInfoViewModel: ObservableObject {
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             
-            let decodedData = try JSONDecoder().decode([CatInfo].self, from: data)
-            
-            catInfo = decodedData
-            
+            // both conditions must be true, if it's not it doesn't compile
             guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                 throw URLError(.badServerResponse)
             }
+            
+            let decodedData = try JSONDecoder().decode([CatInfo].self, from: data)
+            
+            catInfo = decodedData
+            // type of response is URLResponse and we are casting URLResponse(response) to HTTPURLResponse data type
+            
+            
+//            let res = response as? HTTPURLResponse
+//            // this code would work
+//            if res?.statusCode == 200 {
+//                // sucessful
+//                print("request is successful")
+//            } else {
+//                throw URLError(.badServerResponse)
+//            }
+            
         } catch {
             print("Couldn't decode contents \(Error.self)")
         }
