@@ -47,7 +47,7 @@ struct ContentView: View {
                     .frame(width: 400, height: 150)
                 }
                 .toolbar {
-                    NavigationLink(destination: AddNotesView(), label: {
+                    NavigationLink(destination: FoundationModelTestView(), label: {
                         Text("Add Note")
                     })
                 }
