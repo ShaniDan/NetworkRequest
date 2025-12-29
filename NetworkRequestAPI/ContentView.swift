@@ -47,13 +47,25 @@ struct ContentView: View {
                     .frame(width: 400, height: 150)
                 }
                 .toolbar {
-                    NavigationLink(destination: FoundationModelTestView(), label: {
-                        Text("Add Note")
-                    })
-                }
-                .task {
-                    await viewModel.getInfo()
-                }
+                    ToolbarItem {
+                        if #available(iOS 18.0, *) {
+                            NavigationLink(destination: FoundationModelTestView(), label: {
+                                Text("Add Note")
+                            })
+                        } else {
+                            // Fallback on earlier versions
+                        }
+                    }
+                    
+                    ToolbarItem {
+                        NavigationLink(destination: TodoSample(), label: {
+                            Text("Just testing")
+                        })
+                    }
+                    }
+                    .task {
+                        await viewModel.getInfo()
+                    }
             }
         }
     }

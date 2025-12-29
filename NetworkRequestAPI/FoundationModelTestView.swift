@@ -7,22 +7,62 @@
 
 import SwiftUI
 import FoundationModels
+import Translation
+// https://developer.apple.com/videos/play/wwdc2024/10117/
 
+@available(iOS 18.0, *)
 struct FoundationModelTestView: View {
     @State private var input = ""
     @State private var output = ""
+//    var sourceText: String
+    @State var text = "This is a translation"
+    @State private var targetText: String?
+    @State var configuration: TranslationSession.Configuration?
+    
+    
     var body: some View {
         VStack {
-            TextField("Ask Question", text: $input)
-                .padding()
-                .onSubmit {
+            ScrollView {
+                
+                Text(text)
+                
+                Button {
+                    self.performTranslation()
+                } label : {
+                    Text("Translate")
+                }
+                    .translationTask(configuration) { session in
+                        do {
+                            let response = try await session.translate(text)
+                            self.text = response.targetText
+                        } catch {
+                            
+                        }
+                    }
+                
+                TextField("Ask Question", text: $input)
+                    .padding()
+                    .onSubmit {
+                        ask()
+                    }
+                Text(output)
+                    .multilineTextAlignment(.leading)
+                
+                Button("Get Answer") {
                     ask()
                 }
-            Text(output)
-            
-            Button("Get Answer") {
-                ask()
             }
+        }
+    }
+    
+    private func performTranslation() {
+        if configuration == nil {
+            configuration = TranslationSession.Configuration(
+                source: nil,
+                target: Locale.Language(languageCode: .polish)
+            )
+        } else {
+            self.configuration?.invalidate()
         }
     }
     
@@ -43,5 +83,9 @@ struct FoundationModelTestView: View {
 }
 
 #Preview {
-    FoundationModelTestView()
+    if #available(iOS 18.0, *) {
+        FoundationModelTestView()
+    } else {
+        // Fallback on earlier versions
+    }
 }
